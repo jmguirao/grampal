@@ -1,0 +1,8 @@
+grampal
+
+data/*
+
+logs/*
+
+go.sum
+go.mod

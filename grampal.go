@@ -13,15 +13,58 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io"
 	"log/slog"
+	"net/http"
 	"os"
 	"regexp"
 	"strings"
 )
 
+const MAX_FRAS_LENGTH int = 4096
+const MAX_TEXT_LENGTH int = 4194304
+
+func Servicio_diccionario(w http.ResponseWriter, r *http.Request) {
+
+	fras := r.URL.Path[1:]
+	if len(fras) > 32 {
+		io.WriteString(w, "")
+	} else {
+		io.WriteString(w, ConsultaDiccionario(fras))
+	}
+}
+
+func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
+
+	fras := r.URL.Path[1:]
+
+	if len(fras) > MAX_FRAS_LENGTH {
+		io.WriteString(w, "")
+	} else {
+
+		if len(fras) > 0 {
+			io.WriteString(w, AnalizaTexto(fras))
+		}
+
+		r.ParseForm()
+		texto := r.Form.Get("texto")
+		if len(texto) == 0 {
+			io.WriteString(w, "")
+		} else if len(texto) > MAX_TEXT_LENGTH {
+			io.WriteString(w, "EXCEDIDO TAMAÑO MÁXIMO")
+		} else {
+			io.WriteString(w, AnalizaTexto(texto))
+		}
+	}
+}
+
+
 func main() {
 
 	dictPtr := flag.Bool("dic", false, "Uso como diccionario")
+	serPtr := flag.Bool("ser", false, "Servicio")
+	portPtr := flag.String("port", "8001", "Puerto")
+
 	flag.Parse()
 
 	funciona_como := "etiquedador"
@@ -36,13 +79,24 @@ func main() {
 		os.Exit(1)
 	}
 
-	if funciona_como == "diccionario" {
+	
+	if *serPtr { // Funciona como servicio
+
+		puerto := *portPtr
+
+		if *dictPtr {
+			http.HandleFunc("/", Servicio_diccionario)
+		} else {
+			http.HandleFunc("/", Servicio_etiquedor)
+		}
+
+		http.ListenAndServe(":"+puerto, nil)
+
+	} else if funciona_como == "diccionario" {
 		Bucle_entrada_teclado("Palabra")
-	}
-	if funciona_como == "etiquedador" {
+	} else if funciona_como == "etiquedador" {
 		Bucle_entrada_teclado("Frase")
 	}
-
 }
 
 func Bucle_entrada_teclado(prompt string) {

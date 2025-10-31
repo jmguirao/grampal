@@ -1,19 +1,34 @@
+<br>
 
-- API
+Falta
+----
 
+- Cambio categorías estandar
+
+---
+
+- API para corrector
+- API para archivos de texto
+-------
 - Mejorar logger con niveles
-
+-----
 - Paralelismo al cagar los modelos
-- Paralelismo el el cálculos de probabilidades
-
+- Paralelismo en el cálculos de probabilidades
+-----
 - Ajustar categorías
 
 - Ajustar léxico
 
+---
+
 - Estudio de errores
 
-- Mas entrenamiento con IA?
+---
 
-- Más contexto con IA
+- Mas entrenamiento con IA ?
 
-- Lematizador mejorado con IA
+- Más contexto con IA ?
+
+- Lematizador mejorado con IA ?
+
+---

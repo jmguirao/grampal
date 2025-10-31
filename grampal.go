@@ -85,9 +85,11 @@ func main() {
 		puerto := *portPtr
 
 		if *dictPtr {
+			slog.Info(fmt.Sprintf("Servicio como diccionario en el puerto %s", puerto))
 			http.HandleFunc("/", Servicio_diccionario)
 		} else {
-			http.HandleFunc("/", Servicio_etiquedor)
+			slog.Info(fmt.Sprintf("Servicio como etiquedador en el puerto %s", puerto))
+			http.HandleFunc("/", Servicio_etiquetador)
 		}
 
 		http.ListenAndServe(":"+puerto, nil)

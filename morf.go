@@ -26,23 +26,24 @@ var re_empieza_por_minuscula = regexp.MustCompile(`^[a-záéíóúñ]`)
 var re_cantidad = regexp.MustCompile(`\d+`)
 var re_novalid = regexp.MustCompile(`[^\p{Latin}[[:digit:]][[:blank:]][[:punct:]][[:graph:]]«»—‹›“”"‘’‛]`)
 
-func AnalizaTexto(entrada string) string {
+func AnalizaTexto(entrada string, num_análisis string) string {
 	if len(entrada) == 0 {
 		return ""
 	}
+	//slog.Info(num_análisis)
 	entrada = re_novalid.ReplaceAllString(entrada, " ")
 	frases := Segmenta_en_frases(entrada)
 	salida := ""
 	for _, f := range frases {
-		salida += AnalizaFrase(f) + "\n"
+		salida += AnalizaFrase(f, num_análisis) + "\n"
 	}
 
 	return salida
 }
 
-func AnalizaFrase(entrada string) string {
+func AnalizaFrase(entrada string, num_análisis string) string {
 
-	slog.Info("Analizando: [" + entrada + "]")
+	slog.Info("Analizando: [" + entrada + "]"+" "+num_análisis)
 
 	if len(entrada) == 0 {
 		return ""
@@ -72,6 +73,24 @@ func AnalizaFrase(entrada string) string {
 	Desambigua(info_formas)
 
 	salida := Serializa_info_formas(info_formas)
+	if (num_análisis == "todos") {
+		salida = Añade_posibles(salida)
+	}
+	return salida
+}
+
+
+func Añade_posibles(entrada string) string {
+	salida := ""
+	ana := strings.Split(entrada, "\n")
+	for _, a := range ana {
+		partes := strings.Split(a, "/")
+		forma := partes[0]
+		dic := ConsultaDiccionario(forma)
+		fmt.Println("-- " + a + " -  "+ forma+ " " + dic)
+
+	}
+
 	return salida
 }
 

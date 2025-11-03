@@ -84,13 +84,16 @@ func Lee_Diccionario_desde_texto(data_dir, diccionario string) {
 		Dicc[signo] = make(map[string]dict_ent)
 		Dicc[signo]["PUNCT"] = dict_ent{lem: signo}
 	}
+	slog.Info(fmt.Sprintf("Cargadas %d formas", len(Dicc)))
 }
 
-func CargaDatos() error {
+func CargaDatos(funciona_como string) error {
 	Lee_Diccionario_desde_texto(DATADIR, DICCIONARIO)
-	Lee_Monogramas()
-	Lee_Bigramas()
-	Lee_Modelo_lexico()	
+	if funciona_como == "etiquedador"    {
+		Lee_Monogramas()
+		Lee_Bigramas()
+		Lee_Modelo_lexico()	
+	}
 	fmt.Println("Datos cargados")
 	return nil
 	// return errors.New("errorr aqui")
@@ -184,7 +187,7 @@ func Lee_Monogramas() {
 		}
 	} // end for
 
-	slog.Info(fmt.Sprintf("Categorias %d, tokens %d", total_cats, total_tok))
+	slog.Info(fmt.Sprintf("Cargadas %d categorías con  %d cuentas", total_cats, total_tok))
 
 	log := math.Log10(float64(total_tok))
 	for k, v := range Mon {
@@ -246,7 +249,7 @@ func Lee_Bigramas() {
 		}
 	} // end for
 
-	slog.Info(fmt.Sprintf("Categorias bigrama %d, tokens %d", total_cats, total_tok))
+	slog.Info(fmt.Sprintf("Cargados %d bigramas con %d cuentas", total_cats, total_tok))
 
 	for cat2, v := range cuentas {
 
@@ -298,8 +301,10 @@ func Lee_Modelo_lexico() {
 		}
 	}
 	//log := math.Log10(float64(total_tok))
+	total := 0.
 	for f := range Lex {
 		for c := range Lex[f] {
+			total += Lex[f][c]
 			Lex[f][c] = math.Log10(Lex[f][c]) - math.Log10(float64(cuentas[c]))
 			//fmt.Println(f, c, Lex[f][c])
 
@@ -312,4 +317,5 @@ func Lee_Modelo_lexico() {
 			}
 		}
 	}
+	slog.Info(fmt.Sprintf("Cargadas %6.0f cuentas del diccionario léxico", total))
 }

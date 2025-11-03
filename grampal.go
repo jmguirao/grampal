@@ -24,6 +24,7 @@ import (
 const MAX_FRAS_LENGTH int = 4096
 const MAX_TEXT_LENGTH int = 4194304
 
+
 func Servicio_diccionario(w http.ResponseWriter, r *http.Request) {
 
 	fras := r.URL.Path[1:]
@@ -43,7 +44,7 @@ func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 		if len(fras) > 0 {
-			io.WriteString(w, AnalizaTexto(fras))
+			io.WriteString(w, AnalizaTexto(fras, "todos"))
 		}
 
 		r.ParseForm()
@@ -53,7 +54,7 @@ func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
 		} else if len(texto) > MAX_TEXT_LENGTH {
 			io.WriteString(w, "EXCEDIDO TAMAÑO MÁXIMO")
 		} else {
-			io.WriteString(w, AnalizaTexto(texto))
+			io.WriteString(w, AnalizaTexto(texto, "todos"))
 		}
 	}
 }
@@ -64,6 +65,7 @@ func main() {
 	dictPtr := flag.Bool("dic", false, "Uso como diccionario")
 	serPtr := flag.Bool("ser", false, "Servicio")
 	portPtr := flag.String("port", "8001", "Puerto")
+  todosPtr := flag.Bool("todos", false, "Todos los análisis")
 
 	flag.Parse()
 
@@ -73,13 +75,18 @@ func main() {
 	}
 	fmt.Printf("Funcionando como: %s\n", funciona_como)
 
-	err := CargaDatos()
+
+	err := CargaDatos(funciona_como)
 	if err != nil {
 		slog.Error("cargando datos: " + err.Error())
 		os.Exit(1)
 	}
 
-	
+	num_análisis := "uno"
+	if *todosPtr {
+		num_análisis = "todos"
+	}
+
 	if *serPtr { // Funciona como servicio
 
 		puerto := *portPtr
@@ -95,13 +102,13 @@ func main() {
 		http.ListenAndServe(":"+puerto, nil)
 
 	} else if funciona_como == "diccionario" {
-		Bucle_entrada_teclado("Palabra")
+		Bucle_entrada_teclado("Palabra", "uno")
 	} else if funciona_como == "etiquedador" {
-		Bucle_entrada_teclado("Frase")
+		Bucle_entrada_teclado("Frase", num_análisis)
 	}
 }
 
-func Bucle_entrada_teclado(prompt string) {
+func Bucle_entrada_teclado(prompt string, num_análisis string) {
 
 	re_spsp := regexp.MustCompile(`\s+`)
 	var entrada string
@@ -129,7 +136,7 @@ func Bucle_entrada_teclado(prompt string) {
 				salida := ""
 				switch prompt {
 				case "Frase":
-					salida = AnalizaTexto(entrada)
+					salida = AnalizaTexto(entrada,  num_análisis)
 				case "Palabra":
 					salida = ConsultaDiccionario(entrada)
 				}

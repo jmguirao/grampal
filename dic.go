@@ -94,7 +94,7 @@ func CargaDatos(funciona_como string) error {
 		Lee_Bigramas()
 		Lee_Modelo_lexico()	
 	}
-	fmt.Println("Datos cargados")
+	// fmt.Println("Datos cargados")
 	return nil
 	// return errors.New("errorr aqui")
 }
@@ -204,6 +204,7 @@ func Lee_Bigramas() {
 	ModBigFile, err := os.Open(dic_file + ".big")
 	if err != nil {
 		slog.Error(fmt.Sprintf("Problemas con el archivo de bigramas: %v", err))
+		os.Exit(1)
 	}
 
 	defer ModBigFile.Close()
@@ -276,6 +277,7 @@ func Lee_Modelo_lexico() {
 	ModLexFile, err := os.Open(dic_file + ".lex")
 	if err != nil {
 		slog.Error(fmt.Sprintf("Problemas con el modelo estadístico léxico: %v", err))
+		os.Exit(1)
 	}
 	defer ModLexFile.Close()
 

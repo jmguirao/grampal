@@ -30,7 +30,7 @@ func AnalizaTexto(entrada string, num_análisis string) string {
 	if len(entrada) == 0 {
 		return ""
 	}
-	//slog.Info(num_análisis)
+	//slog.Debug(num_análisis)
 	entrada = re_novalid.ReplaceAllString(entrada, " ")
 	frases := Segmenta_en_frases(entrada)
 	salida := ""
@@ -43,7 +43,7 @@ func AnalizaTexto(entrada string, num_análisis string) string {
 
 func AnalizaFrase(entrada string, num_análisis string) string {
 
-	slog.Info("Analizando: [" + entrada + "]"+" "+num_análisis)
+	slog.Debug("Analizando: [" + entrada + "]"+" "+num_análisis)
 
 	if len(entrada) == 0 {
 		return ""
@@ -53,7 +53,7 @@ func AnalizaFrase(entrada string, num_análisis string) string {
 	frase_pretokenizada := strings.Replace(entrada, `\`, `\\`, -1)
 	frase_tokenizada := TokenizaFrase(frase_pretokenizada) // minúscula principio de frase + multiwords
 
-	slog.Info("Tokenizacion: [" + frase_tokenizada + "]")
+	slog.Debug("Tokenizacion: [" + frase_tokenizada + "]")
 
 	lista_formas_texto := strings.Split(frase_tokenizada, " ")
 	numero_de_formas := len(lista_formas_texto)
@@ -339,7 +339,7 @@ func Desambigua(info_formas []info_f) {
 	// hay ceros cuando hay que resolver
 	for re_ceros.FindStringIndex(para_resolver) != nil {
 
-		slog.Info("Ambiguedad: " + para_resolver )
+		slog.Debug("Ambiguedad: " + para_resolver )
 
 		loc := re_ceros.FindStringIndex(para_resolver)
 		n_ceros := loc[1] - loc[0]
@@ -353,7 +353,7 @@ func Desambigua(info_formas []info_f) {
 
 func Resuelve(info_formas []info_f, a int, b int) {
 
-	slog.Info(fmt.Sprintf("%v", info_formas))
+	slog.Debug(fmt.Sprintf("%v", info_formas))
 
 	número_posibilidades := 1
 	i := a
@@ -361,7 +361,7 @@ func Resuelve(info_formas []info_f, a int, b int) {
 		número_posibilidades *= info_formas[i].n_cat
 		i++
 	}
-	slog.Info(fmt.Sprintf("%d %d -> posibilidades %d", a, b, número_posibilidades))
+	slog.Debug(fmt.Sprintf("%d %d -> posibilidades %d", a, b, número_posibilidades))
 
 	if número_posibilidades > 1024 {
 		Resuelve_por_secuencia(info_formas, a, b)
@@ -398,7 +398,7 @@ func Calculo_exhaustivo(info_formas []info_f, a int, b int) {
 			sec_máxima = sequencia
 		}
 	}
-	slog.Info(fmt.Sprintf("\n\t\t\t\t\tElegida %v \t %4.2f\n", sec_máxima, prob_máxima))
+	slog.Debug(fmt.Sprintf("\n\t\t\t\t\tElegida %v \t %4.2f\n", sec_máxima, prob_máxima))
 
 	j = 0
 	for i := a; i < b; i++ {
@@ -420,8 +420,8 @@ func Probabilidad_de_esta(sequencia []string, cat_ant string, cat_pos string, se
 		cat_ant = cat
 	}
 	prob += Big[cat_ant][cat_pos]
-	slog.Info(fmt.Sprintf("\t%v\t%4.2f", sequencia, prob))
-	slog.Info(fmt.Sprintf("\t\t\t\t %s %s \t %4.2f", cat_ant, cat_pos, Big[cat_ant][cat_pos]))
+	slog.Debug(fmt.Sprintf("\t%v\t%4.2f", sequencia, prob))
+	slog.Debug(fmt.Sprintf("\t\t\t\t %s %s \t %4.2f", cat_ant, cat_pos, Big[cat_ant][cat_pos]))
 	return prob
 }
 
@@ -432,7 +432,7 @@ func Probabilidad_bigrama_de(cat_ant string, cat string, forma string) float64 {
 	lex := Lex[forma][cat] * Suavizado_lex
 
 	prob := mon + big + lex
-	slog.Info(fmt.Sprintf(" Pr(%s,%s) + Pr(%s) + Pr(%s, %s) %4.2f + %4.2f + %4.2f = %4.2f", cat_ant, cat, cat, cat, forma, big, mon, lex, prob))
+	slog.Debug(fmt.Sprintf(" Pr(%s,%s) + Pr(%s) + Pr(%s, %s) %4.2f + %4.2f + %4.2f = %4.2f", cat_ant, cat, cat, cat, forma, big, mon, lex, prob))
 	return prob
 }
 
@@ -492,14 +492,14 @@ func Resuelve_por_secuencia(info_formas []info_f, a int, b int) {
 
 			categoría := info_formas[i].cats[j]
 			probabilidad := Probabilidad_bigrama_de(cat_ant, categoría, forma)
-			slog.Info(fmt.Sprintf("\t\tP_mon(%s,%s|%s) = %5.2f", cat_ant, categoría, forma, probabilidad))
+			slog.Debug(fmt.Sprintf("\t\tP_mon(%s,%s|%s) = %5.2f", cat_ant, categoría, forma, probabilidad))
 			if probabilidad > prob_máxima {
 				prob_máxima = probabilidad
 				cat_máxima = categoría
 			}
 			j++
 		}
-		slog.Info(fmt.Sprintf("\n\t\tElegida [%s/%s]", forma, cat_máxima))
+		slog.Debug(fmt.Sprintf("\n\t\tElegida [%s/%s]", forma, cat_máxima))
 
 		info_formas[i].cat = cat_máxima
 		info_formas[i].resuelta = true

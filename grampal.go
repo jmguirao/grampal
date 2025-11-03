@@ -44,7 +44,7 @@ func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 		if len(fras) > 0 {
-			io.WriteString(w, AnalizaTexto(fras, "todos"))
+			io.WriteString(w, AnalizaTexto(fras, num_análisis))
 		}
 
 		r.ParseForm()
@@ -54,18 +54,19 @@ func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
 		} else if len(texto) > MAX_TEXT_LENGTH {
 			io.WriteString(w, "EXCEDIDO TAMAÑO MÁXIMO")
 		} else {
-			io.WriteString(w, AnalizaTexto(texto, "todos"))
+			io.WriteString(w, AnalizaTexto(texto, num_análisis))
 		}
 	}
 }
 
 
+var num_análisis string = "uno"
 func main() {
 
 	dictPtr := flag.Bool("dic", false, "Uso como diccionario")
 	serPtr := flag.Bool("ser", false, "Servicio")
 	portPtr := flag.String("port", "8001", "Puerto")
-  todosPtr := flag.Bool("todos", false, "Todos los análisis")
+	todosPtr := flag.Bool("todos", false, "Todos los análisis")
 
 	flag.Parse()
 
@@ -73,7 +74,7 @@ func main() {
 	if *dictPtr {
 		funciona_como = "diccionario"
 	}
-	fmt.Printf("Funcionando como: %s\n", funciona_como)
+	slog.Info(fmt.Sprintf("Funcionando como: %s\n", funciona_como))
 
 
 	err := CargaDatos(funciona_como)
@@ -82,10 +83,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	num_análisis := "uno"
 	if *todosPtr {
 		num_análisis = "todos"
 	}
+
 
 	if *serPtr { // Funciona como servicio
 
@@ -131,7 +132,7 @@ func Bucle_entrada_teclado(prompt string, num_análisis string) {
 			} else {
 				entrada = re_spsp.ReplaceAllString(entrada, " ")
 				entrada = strings.Trim(entrada, " ")
-				fmt.Printf("Análisis de  [%s]\n\n", entrada)
+				slog.Debug(fmt.Sprintf("Análisis de  [%s]\n\n", entrada))
 
 				salida := ""
 				switch prompt {

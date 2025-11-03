@@ -82,13 +82,45 @@ func AnalizaFrase(entrada string, num_análisis string) string {
 
 func Añade_posibles(entrada string) string {
 	salida := ""
+	entrada = strings.TrimRight(entrada, "\n")
 	ana := strings.Split(entrada, "\n")
 	for _, a := range ana {
 		partes := strings.Split(a, "/")
 		forma := partes[0]
-		dic := ConsultaDiccionario(forma)
-		fmt.Println("-- " + a + " -  "+ forma+ " " + dic)
+		//lema  := partes[1]
+		resto := partes[2]
 
+		di := Dicc[forma]
+		n  := len(di)
+		añadidos := ""
+		if n == 1 {        // no ambigua
+			salida += a + "\n"		
+		} else {
+			cat := ""
+			if (strings.Contains(resto, ",")) {
+				prts := strings.Split(resto, ",")
+				cat = prts[0]
+				// fmt.Printf("Sal:[%s] forma:[%s] \t lema:[%s] \t resto:[%s]\n", a, forma, lema, resto)
+				
+			} else {
+				cat = resto
+			}
+			//fmt.Printf("Sal:[%s] forma:[%s] \t lema:[%s] \t cat:[%s] \t resto:[%s]\n", a, forma, lema, cat, resto)
+			for key, val := range di {
+				// categorías distintas de la elegida en primer lugar
+				if (key != cat) {
+					// fmt.Println(key, val.lem, val.ras)
+					restillo := ""
+					if val.ras != "" {
+						restillo += "," + val.ras
+					}
+					añadidos += fmt.Sprintf("\t%s/%s/%s%s", forma, val.lem, key, restillo)
+				}
+			}
+
+
+			salida += a + añadidos +"\n"
+		} 
 	}
 
 	return salida

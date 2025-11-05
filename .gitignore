@@ -1,8 +1,8 @@
 grampal
 
 data/*
-
 logs/*
+corrector/*
 
 go.sum
 go.mod

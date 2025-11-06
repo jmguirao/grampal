@@ -4,7 +4,8 @@
 
 Falta:
 ----
-
+  - Poner el cors bien
+----
 
 ✓ API para corrector
 

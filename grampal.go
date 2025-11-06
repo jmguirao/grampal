@@ -19,6 +19,8 @@ import (
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/rs/cors"
 )
 
 const MAX_FRAS_LENGTH int = 4096
@@ -37,24 +39,35 @@ func Servicio_diccionario(w http.ResponseWriter, r *http.Request) {
 
 func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
 
+
+	// Como etiquetador
+	if r.Method == "POST" {
+		r.ParseForm()
+		texto := r.FormValue("texto")
+		if len(texto) > MAX_TEXT_LENGTH {
+			io.WriteString(w, fmt.Sprintf("Excedido longitud máxima de texto: %d", MAX_TEXT_LENGTH))
+		} else {
+			io.WriteString(w, AnalizaTexto(texto, "uno"))
+		}
+	}
+
+	if r.Method == "PUT" {
+		r.ParseForm()
+		texto := r.FormValue("texto")
+		if len(texto) > MAX_TEXT_LENGTH {
+			io.WriteString(w, fmt.Sprintf("Excedido longitud máxima de texto: %d", MAX_TEXT_LENGTH))
+		} else {
+			io.WriteString(w, AnalizaTexto(texto, "todos"))
+		}
+	}
+
+	// GET
 	fras := r.URL.Path[1:]
-
 	if len(fras) > MAX_FRAS_LENGTH {
-		io.WriteString(w, "")
+		io.WriteString(w, fmt.Sprintf("Excedido longitud máxima de texto: %d", MAX_FRAS_LENGTH))
 	} else {
-
 		if len(fras) > 0 {
 			io.WriteString(w, AnalizaTexto(fras, num_análisis))
-		}
-
-		r.ParseForm()
-		texto := r.Form.Get("texto")
-		if len(texto) == 0 {
-			io.WriteString(w, "")
-		} else if len(texto) > MAX_TEXT_LENGTH {
-			io.WriteString(w, "EXCEDIDO TAMAÑO MÁXIMO")
-		} else {
-			io.WriteString(w, AnalizaTexto(texto, num_análisis))
 		}
 	}
 }
@@ -67,6 +80,7 @@ func main() {
 	serPtr := flag.Bool("ser", false, "Servicio")
 	portPtr := flag.String("port", "8001", "Puerto")
 	todosPtr := flag.Bool("todos", false, "Todos los análisis")
+	corsPtr   := flag.Bool("cors", false, "Para desarrollo (cors)")
 
 	flag.Parse()
 
@@ -91,16 +105,23 @@ func main() {
 	if *serPtr { // Funciona como servicio
 
 		puerto := *portPtr
+		mux := http.NewServeMux()
 
 		if *dictPtr {
 			slog.Info(fmt.Sprintf("Servicio como diccionario en el puerto %s", puerto))
-			http.HandleFunc("/", Servicio_diccionario)
+			mux.HandleFunc("/", Servicio_diccionario)
 		} else {
 			slog.Info(fmt.Sprintf("Servicio como etiquedador en el puerto %s", puerto))
-			http.HandleFunc("/", Servicio_etiquetador)
+			mux.HandleFunc("/", Servicio_etiquetador)
 		}
 
-		http.ListenAndServe(":"+puerto, nil)
+		// cors middleware
+		if ( *corsPtr) {
+			handler := cors.Default().Handler(mux)
+			http.ListenAndServe(":"+puerto, handler)
+		} else {
+			http.ListenAndServe(":"+puerto, nil)
+		}
 
 	} else if funciona_como == "diccionario" {
 		Bucle_entrada_teclado("Palabra", "uno")

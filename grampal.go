@@ -39,6 +39,7 @@ func Servicio_diccionario(w http.ResponseWriter, r *http.Request) {
 
 func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
 
+	
 
 	// Como etiquetador
 	if r.Method == "POST" {
@@ -52,8 +53,10 @@ func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == "PUT" {
+		fmt.Println("PUT")
 		r.ParseForm()
 		texto := r.FormValue("texto")
+		fmt.Println(texto)
 		if len(texto) > MAX_TEXT_LENGTH {
 			io.WriteString(w, fmt.Sprintf("Excedido longitud máxima de texto: %d", MAX_TEXT_LENGTH))
 		} else {

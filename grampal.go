@@ -26,7 +26,6 @@ import (
 const MAX_FRAS_LENGTH int = 4096
 const MAX_TEXT_LENGTH int = 4194304
 
-
 func Servicio_diccionario(w http.ResponseWriter, r *http.Request) {
 
 	fras := r.URL.Path[1:]
@@ -38,8 +37,6 @@ func Servicio_diccionario(w http.ResponseWriter, r *http.Request) {
 }
 
 func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
-
-	
 
 	// Como etiquetador
 	if r.Method == "POST" {
@@ -75,15 +72,15 @@ func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 var num_análisis string = "uno"
+
 func main() {
 
 	dictPtr := flag.Bool("dic", false, "Uso como diccionario")
 	serPtr := flag.Bool("ser", false, "Servicio")
 	portPtr := flag.String("port", "8001", "Puerto")
 	todosPtr := flag.Bool("todos", false, "Todos los análisis")
-	corsPtr   := flag.Bool("cors", false, "Para desarrollo (cors)")
+	corsPtr := flag.Bool("cors", false, "Para desarrollo (cors)")
 
 	flag.Parse()
 
@@ -92,7 +89,6 @@ func main() {
 		funciona_como = "diccionario"
 	}
 	slog.Info(fmt.Sprintf("Funcionando como: %s\n", funciona_como))
-
 
 	err := CargaDatos(funciona_como)
 	if err != nil {
@@ -103,7 +99,6 @@ func main() {
 	if *todosPtr {
 		num_análisis = "todos"
 	}
-
 
 	if *serPtr { // Funciona como servicio
 
@@ -119,8 +114,13 @@ func main() {
 		}
 
 		// cors middleware
-		if ( *corsPtr) {
-			handler := cors.Default().Handler(mux)
+		if *corsPtr {
+			c := cors.New(cors.Options{
+				AllowedOrigins:   []string{"*"},
+				AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut},
+				AllowCredentials: true,
+			})
+			handler := c.Handler(mux)
 			http.ListenAndServe(":"+puerto, handler)
 		} else {
 			http.ListenAndServe(":"+puerto, nil)
@@ -150,7 +150,7 @@ func Bucle_entrada_teclado(prompt string, num_análisis string) {
 			if len(entrada) > 2048 {
 				fmt.Println("Demasiado larga")
 			} else if entrada == "" {
-				
+
 			} else if !re_permitidos.MatchString(entrada) {
 				fmt.Println("Caractéres no permitidos")
 			} else {
@@ -161,7 +161,7 @@ func Bucle_entrada_teclado(prompt string, num_análisis string) {
 				salida := ""
 				switch prompt {
 				case "Frase":
-					salida = AnalizaTexto(entrada,  num_análisis)
+					salida = AnalizaTexto(entrada, num_análisis)
 				case "Palabra":
 					salida = ConsultaDiccionario(entrada)
 				}

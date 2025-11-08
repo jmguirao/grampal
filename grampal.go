@@ -49,11 +49,10 @@ func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// etiquedador todas las opciones (para corrector)
 	if r.Method == "PUT" {
-		fmt.Println("PUT")
 		r.ParseForm()
 		texto := r.FormValue("texto")
-		fmt.Println(texto)
 		if len(texto) > MAX_TEXT_LENGTH {
 			io.WriteString(w, fmt.Sprintf("Excedido longitud máxima de texto: %d", MAX_TEXT_LENGTH))
 		} else {
@@ -61,7 +60,7 @@ func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// GET
+	// GET, etiquedador para frases
 	fras := r.URL.Path[1:]
 	if len(fras) > MAX_FRAS_LENGTH {
 		io.WriteString(w, fmt.Sprintf("Excedido longitud máxima de texto: %d", MAX_FRAS_LENGTH))
@@ -114,17 +113,16 @@ func main() {
 		}
 
 		// cors middleware
+		c := cors.New(cors.Options{})
 		if *corsPtr {
-			c := cors.New(cors.Options{
+			c = cors.New(cors.Options{
 				AllowedOrigins:   []string{"*"},
 				AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut},
 				AllowCredentials: true,
 			})
-			handler := c.Handler(mux)
-			http.ListenAndServe(":"+puerto, handler)
-		} else {
-			http.ListenAndServe(":"+puerto, nil)
 		}
+		handler := c.Handler(mux)
+		http.ListenAndServe(":"+puerto, handler)
 
 	} else if funciona_como == "diccionario" {
 		Bucle_entrada_teclado("Palabra", "uno")

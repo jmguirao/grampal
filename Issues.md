@@ -4,18 +4,16 @@
 
 Falta:
 ----
-  - Poner el cors bien
-----
 
-✓ API para corrector
-
+---
+  - ✓ Poner el cors bien
+  - ✓ API para corrector
+  - Logger
 ---
 - Cambio categorías estandar
 ---
 - Paralelismo al cagar los modelos
 - Paralelismo en el cálculo de probabilidades
----
-- Logger
 ---
 - Ajustar léxico
 - Estudio de errores

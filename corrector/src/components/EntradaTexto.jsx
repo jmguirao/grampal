@@ -15,7 +15,7 @@ export default function EntradaTexto({handleEnviar}) {
 			        onClick={() => {const formu = document.getElementById('formu'); handleEnviar(formu.value)}}>
          Enviar
       </button>
-			<br></br><br></br><br></br><br></br>		
+			<br/>	
 		</div>
 
 	)

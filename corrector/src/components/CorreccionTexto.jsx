@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import axios from "axios"
 
-const FONDO_SI    = "papayawhip"
+const FONDO_SI    = "oldlace"
 const FONDO_NO    = "peachpuff"
 
 

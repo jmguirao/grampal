@@ -2,7 +2,11 @@ grampal
 
 data/*
 logs/*
-corrector/*
+corrector/.env.production
 
 go.sum
 go.mod
+
+.env
+.env.development
+.env.production

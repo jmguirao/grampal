@@ -72,14 +72,21 @@ export default function CorreccionTexto({paraCorregir}) {
 		if (x > cols) { cols = x}
 	}
 	//console.log(cols)
+
+	const styleDeTr = (f, i) => {
+		const n = f.split("\t").length
+		if (n <= 1) return {}
+		else return {borderBottom:"1px solid aliceblue", borderTop:"1px solid aliceblue"}
+	}
+
 	// todo bien
 	return (
 		<div className="py-2 px-5  h-auto d-flex flex-column" style={{backgroundColor:'#ffd6ba'}}>
 			 <div className='lead px-4 py-3' style={{fontSize: '80%'}}>Click en la opción correcta</div>
-			<table><tbody  className='' style={{fontSize:'75%'}} id="tbody">
+			<table className='w-[80]'><tbody style={{fontSize:'75%'}} id="tbody">
 				{
 					filas.map((f, i) => {
-						return (<tr key={i}>
+						return (<tr key={i} style={styleDeTr(f, i)}>
 						          {[... colsDe(f, cols, i)]}
 						        </tr>)
 					})

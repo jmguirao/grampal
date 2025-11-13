@@ -73,6 +73,7 @@ export default function CorreccionTexto({paraCorregir}) {
 	}
 	//console.log(cols)
 
+
 	const styleDeTr = (f, i) => {
 		const n = f.split("\t").length
 		if (n <= 1) return {}
@@ -83,7 +84,7 @@ export default function CorreccionTexto({paraCorregir}) {
 	return (
 		<div className="py-2 px-5  h-auto d-flex flex-column" style={{backgroundColor:'#ffd6ba'}}>
 			 <div className='lead px-4 py-3' style={{fontSize: '80%'}}>Click en la opción correcta</div>
-			<table className='w-[80]'><tbody style={{fontSize:'75%'}} id="tbody">
+			<table><tbody  className='' style={{fontSize:'75%'}} id="tbody">
 				{
 					filas.map((f, i) => {
 						return (<tr key={i} style={styleDeTr(f, i)}>
@@ -94,16 +95,37 @@ export default function CorreccionTexto({paraCorregir}) {
 			</tbody></table>
 			<br/>
 			<button class="mt-3 bg-white hover:bg-gray-100 px-1 border border-gray-400 rounded shadow"
-			         onClick={Corregido}>
-         Corregido
+			        className="btn btn-light my-2" onClick={Corregido}> Corregido
+      </button>			
+			<button class="mt-3 bg-white hover:bg-gray-100 px-1 border border-gray-400 rounded shadow"
+			        className="btn btn-light my-2 mt-2" onClick={Guardar_en_archivo}> Guardar en archivo
       </button>			
 		</div>
 	)
 }
 
-const Corregido = () => {
+// https://medium.com/@python-javascript-php-html-css/how-to-use-javascript-to-save-files-in-html-fixing-the-require-is-not-defined-issue-404b18805145
+
+const Guardar_en_archivo = (evt) => {
+	console.log(evt)
+	let resu = ""
+	const corregidos = losCorregidos()
+	for (const c of corregidos) {
+		resu += c + "\n"
+	}
+	const textBlob = new Blob([resu], {type: 'text/plain'});
+	evt.target.addEventListener('click', () => {
+
+		const link = document.createElement("a");
+  		link.href = URL.createObjectURL(textBlob);
+  		link.download = "Corregidos.txt";
+  		link.click();
+  		URL.revokeObjectURL(link.href);
+	})
+}
+
+const losCorregidos = () => {
 	const corregidos = []
-	console.log("Corregidos: ")
 	const tbody = document.getElementById('tbody')
 	for (const tr of tbody.children) {
 		for (const td of tr.children) {
@@ -112,7 +134,12 @@ const Corregido = () => {
 			}
 		}
 	}
+	return corregidos
+}
+
+const Corregido = () => {
 	let resu = ""
+	const corregidos = losCorregidos()
 	for (const c of corregidos) {
 		resu += c + "<br>"
 	}

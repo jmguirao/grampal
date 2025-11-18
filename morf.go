@@ -43,7 +43,7 @@ func AnalizaTexto(entrada string, num_análisis string) string {
 
 func AnalizaFrase(entrada string, num_análisis string) string {
 
-	slog.Debug("Analizando: [" + entrada + "]"+" "+num_análisis)
+	slog.Debug("Analizando: [" + entrada + "]" + " " + num_análisis)
 
 	if len(entrada) == 0 {
 		return ""
@@ -73,12 +73,11 @@ func AnalizaFrase(entrada string, num_análisis string) string {
 	Desambigua(info_formas)
 
 	salida := Serializa_info_formas(info_formas)
-	if (num_análisis == "todos") {
+	if num_análisis == "todos" {
 		salida = Añade_posibles(salida)
 	}
 	return salida
 }
-
 
 func Añade_posibles(entrada string) string {
 	salida := ""
@@ -91,24 +90,24 @@ func Añade_posibles(entrada string) string {
 		resto := partes[2]
 
 		di := Dicc[forma]
-		n  := len(di)
+		n := len(di)
 		añadidos := ""
-		if n == 1 {        // no ambigua
-			salida += a + "\n"		
+		if n == 1 { // no ambigua
+			salida += a + "\n"
 		} else {
 			cat := ""
-			if (strings.Contains(resto, ",")) {
+			if strings.Contains(resto, ",") {
 				prts := strings.Split(resto, ",")
 				cat = prts[0]
 				// fmt.Printf("Sal:[%s] forma:[%s] \t lema:[%s] \t resto:[%s]\n", a, forma, lema, resto)
-				
+
 			} else {
 				cat = resto
 			}
 			//fmt.Printf("Sal:[%s] forma:[%s] \t lema:[%s] \t cat:[%s] \t resto:[%s]\n", a, forma, lema, cat, resto)
 			for key, val := range di {
 				// categorías distintas de la elegida en primer lugar
-				if (key != cat) {
+				if key != cat {
 					// fmt.Println(key, val.lem, val.ras)
 					restillo := ""
 					if val.ras != "" {
@@ -118,9 +117,8 @@ func Añade_posibles(entrada string) string {
 				}
 			}
 
-
-			salida += a + añadidos +"\n"
-		} 
+			salida += a + añadidos + "\n"
+		}
 	}
 
 	return salida
@@ -252,7 +250,7 @@ func Instancia(info_formas []info_f) {
 		// fmt.Println(consulta, n_cats, lista_cats)
 
 		switch n_cats {
-case 0:
+		case 0:
 
 			if re_cantidad.MatchString(forma) {
 
@@ -298,7 +296,7 @@ case 0:
 				info_formas[i].resuelta = false
 				info_formas[i].cats = make([]string, n_cats+1)
 				copy(info_formas[i].cats[:], append(lista_cats, "NPR"))
-				fmt.Println(info_formas[i].cats)
+				// fmt.Println(info_formas[i].cats)
 
 			} else { // una sola
 				info_formas[i].n_cat = 1
@@ -339,7 +337,7 @@ func Desambigua(info_formas []info_f) {
 	// hay ceros cuando hay que resolver
 	for re_ceros.FindStringIndex(para_resolver) != nil {
 
-		slog.Debug("Ambiguedad: " + para_resolver )
+		slog.Debug("Ambiguedad: " + para_resolver)
 
 		loc := re_ceros.FindStringIndex(para_resolver)
 		n_ceros := loc[1] - loc[0]

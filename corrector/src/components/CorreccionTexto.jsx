@@ -95,10 +95,10 @@ export default function CorreccionTexto({paraCorregir}) {
 			</tbody></table>
 			<br/>
 			<button class="mt-3 bg-white hover:bg-gray-100 px-1 border border-gray-400 rounded shadow"
-			        className="btn btn-light my-2" onClick={Corregido}> Corregido
+			        className="btn btn-light my-2" onClick={Corregido}> Mandar texto corregido a otra pestaña
       </button>			
 			<button class="mt-3 bg-white hover:bg-gray-100 px-1 border border-gray-400 rounded shadow"
-			        className="btn btn-light my-2 mt-2" onClick={Guardar_en_archivo}> Guardar en archivo
+			        className="btn btn-light my-2 mt-2" onClick={Guardar_en_archivo}> Mandar texto corregido a un archivo
       </button>			
 		</div>
 	)
@@ -113,6 +113,8 @@ const Guardar_en_archivo = (evt) => {
 	for (const c of corregidos) {
 		resu += c + "\n"
 	}
+	const but = evt.target
+	but.innerText = 'Guardar archivo'
 	const textBlob = new Blob([resu], {type: 'text/plain'});
 	evt.target.addEventListener('click', () => {
 

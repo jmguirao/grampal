@@ -1,4 +1,5 @@
 
 
 dev:
-	go run . --ser
+	go run . --ser --cors
+

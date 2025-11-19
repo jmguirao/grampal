@@ -94,11 +94,9 @@ export default function CorreccionTexto({paraCorregir}) {
 				}
 			</tbody></table>
 			<br/>
-			<button class="mt-3 bg-white hover:bg-gray-100 px-1 border border-gray-400 rounded shadow"
-			        className="btn btn-light my-2" onClick={Corregido}> Mandar texto corregido a otra pestaña
+			<button  className="btn btn-warning my-2" onClick={Corregido}> Mandar texto corregido a otra pestaña
       </button>			
-			<button class="mt-3 bg-white hover:bg-gray-100 px-1 border border-gray-400 rounded shadow"
-			        className="btn btn-light my-2 mt-2" onClick={Guardar_en_archivo}> Mandar texto corregido a un archivo
+			<button className="btn btn-warning my-2 mt-2" onClick={Guardar_en_archivo}> Mandar texto corregido a un archivo
       </button>			
 		</div>
 	)

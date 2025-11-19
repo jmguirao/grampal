@@ -10,11 +10,12 @@ export default function EntradaTexto({handleEnviar}) {
 				<textarea id="formu" rows="22" cols="120" class="px-1 py-1" 
 				          className="w-100 px-2 py-1" style={{backgroundColor:'white'}}/>
 			</form>
-			<button class="mt-3 bg-white hover:bg-gray-100 px-1 border border-gray-400 rounded shadow"
-			        className="btn btn-light my-2"
+			<button 
+			        className="btn btn-warning my-2"
 			        onClick={() => {const formu = document.getElementById('formu'); handleEnviar(formu.value)}}>
          Enviar
       </button>
+			
 			<br/>	
 		</div>
 

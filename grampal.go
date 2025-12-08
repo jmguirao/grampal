@@ -14,13 +14,13 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log/slog"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
 
 	"github.com/rs/cors"
+	"github.com/sirupsen/logrus"
 )
 
 const MAX_FRAS_LENGTH int = 4096
@@ -72,27 +72,54 @@ func Servicio_etiquetador(w http.ResponseWriter, r *http.Request) {
 }
 
 var num_análisis string = "uno"
+var log *logrus.Logger
 
 func main() {
+
+	log = logrus.New()
+	log.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp:   true, // Show full timestamp instead of elapsed time
+		TimestampFormat: "2006-01-02 15:04:05",
+		DisableColors:   false, // Enable colors for better readability
+		ForceColors:     false, // Force colors even when not in a terminal
+	})
 
 	dictPtr := flag.Bool("dic", false, "Uso como diccionario")
 	serPtr := flag.Bool("ser", false, "Servicio")
 	portPtr := flag.String("port", "8001", "Puerto")
 	todosPtr := flag.Bool("todos", false, "Todos los análisis")
 	corsPtr := flag.Bool("cors", false, "Para desarrollo (cors)")
+	debugPtr := flag.Bool("debug", false, "Modo Debug")
+	tracePtr := flag.Bool("trace", false, "Modo Trace")
 
 	flag.Parse()
 
+	if *debugPtr {
+		log.SetLevel(logrus.DebugLevel)
+	}
+	if *tracePtr {
+		log.SetLevel(logrus.TraceLevel)
+	}
+  
+
+	log.WithField("Log Level", log.GetLevel()).Info()
+
+
+	// log.WithField("user_id", 123).Info("hello from logrus")
+	// a := "dsfsdf"
+	// log.Debugf("%s hello from logrus", a)
+	
+
 	funciona_como := "etiquedador"
-	if *dictPtr {
+	if (*dictPtr) {
 		funciona_como = "diccionario"
 	}
-	slog.Info(fmt.Sprintf("Funcionando como: %s\n", funciona_como))
+
+	log.WithField("Funciona como", funciona_como).Info()
 
 	err := CargaDatos(funciona_como)
 	if err != nil {
-		slog.Error("cargando datos: " + err.Error())
-		os.Exit(1)
+		log.WithError(err).Fatal("Cargando datos")
 	}
 
 	if *todosPtr {
@@ -105,10 +132,10 @@ func main() {
 		mux := http.NewServeMux()
 
 		if *dictPtr {
-			slog.Info(fmt.Sprintf("Servicio como diccionario en el puerto %s", puerto))
+			log.Infof("Servicio como diccionario en el puerto %s", puerto)
 			mux.HandleFunc("/", Servicio_diccionario)
 		} else {
-			slog.Info(fmt.Sprintf("Servicio como etiquedador en el puerto %s", puerto))
+			log.Infof("Servicio como etiquedador en el puerto %s", puerto)
 			mux.HandleFunc("/", Servicio_etiquetador)
 		}
 
@@ -154,7 +181,7 @@ func Bucle_entrada_teclado(prompt string, num_análisis string) {
 			} else {
 				entrada = re_spsp.ReplaceAllString(entrada, " ")
 				entrada = strings.Trim(entrada, " ")
-				slog.Debug(fmt.Sprintf("Análisis de  [%s]\n\n", entrada))
+				log.Debugf("Análisis de  [%s]\n\n", entrada)
 
 				salida := ""
 				switch prompt {

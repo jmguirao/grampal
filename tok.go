@@ -143,9 +143,13 @@ func ReconoceMultiwordsTrie(frase string) string {
 		return frase
 	}
 
+	// devuelve frase con subrallados si es mw
+	last_trie := ""
 	for i > 0 {
 
 		m, _, b := Mw.LongestPrefix(frase_t)
+		last_trie = m
+		log.Debug("m: ", m, "  b: ", b)
 		if b {
 
 			r := strings.Replace(m, " ", "_", -1)
@@ -164,5 +168,8 @@ func ReconoceMultiwordsTrie(frase string) string {
 		i = strings.Index(frase_t, " ")
 		frase_t = frase_t[i+1:]
 	}
+	log.Debug("frase: ", frase)
+	// para corrregir conflicto: a la pared -- a la par
+	if (len(frase) != len(last_trie)) {frase = strings.Replace(frase, "_", " ", -1)}
 	return frase
 }

@@ -2,8 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
-	"log/slog"
 	"math"
 	"os"
 	"path"
@@ -32,8 +30,7 @@ func Lee_Diccionario_desde_texto(data_dir, diccionario string) {
 	dic_file := path.Join(DATADIR, DICCIONARIO)
 	diccTextFile, err := os.Open(dic_file + ".txt")
 	if err != nil {
-		slog.Error("cargando diccionario: " + err.Error())
-		os.Exit(1)
+		log.WithError(err).Error("Error cargando diccionario")
 	}
 	defer diccTextFile.Close()
 
@@ -84,7 +81,7 @@ func Lee_Diccionario_desde_texto(data_dir, diccionario string) {
 		Dicc[signo] = make(map[string]dict_ent)
 		Dicc[signo]["PUNCT"] = dict_ent{lem: signo}
 	}
-	slog.Info(fmt.Sprintf("Cargadas %d formas", len(Dicc)))
+	log.Infof("Cargadas %d formas", len(Dicc))
 }
 
 func CargaDatos(funciona_como string) error {
@@ -94,9 +91,9 @@ func CargaDatos(funciona_como string) error {
 		Lee_Bigramas()
 		Lee_Modelo_lexico()	
 	}
-	// fmt.Println("Datos cargados")
 	return nil
-	// return errors.New("errorr aqui")
+	// prueba
+	//return errors.New("error cargando datos")
 }
 
 func ConsultaDiccionario(entrada string) string {
@@ -155,8 +152,7 @@ func Lee_Monogramas() {
 	dic_file := path.Join(DATADIR, "General")
 	ModMonFile, err := os.Open(dic_file + ".mon")
 	if err != nil {
-		slog.Error(fmt.Sprintf("Problemas con el archivo de monogramas: %v", err))
-		os.Exit(1)
+		log.WithError(err).Error("Problemas con el archivo de monogramas")
 	}
 	defer ModMonFile.Close()
 	input := bufio.NewScanner(ModMonFile)
@@ -187,13 +183,13 @@ func Lee_Monogramas() {
 		}
 	} // end for
 
-	slog.Info(fmt.Sprintf("Cargadas %d categorías con  %d cuentas", total_cats, total_tok))
+	log.Infof("Cargadas %d categorías con  %d cuentas", total_cats, total_tok)
 
-	log := math.Log10(float64(total_tok))
+	loggg := math.Log10(float64(total_tok))
 	for k, v := range Mon {
 
-		Mon[k] = math.Log10(v) - log
-		//fmt.Println(k, v, Mon[k])
+		Mon[k] = math.Log10(v) - loggg
+		// log.Debugln(k, v, Mon[k])
 	}
 }
 
@@ -203,8 +199,7 @@ func Lee_Bigramas() {
 	dic_file := path.Join(DATADIR, "General")
 	ModBigFile, err := os.Open(dic_file + ".big")
 	if err != nil {
-		slog.Error(fmt.Sprintf("Problemas con el archivo de bigramas: %v", err))
-		os.Exit(1)
+		log.WithError(err).Error("Problemas con el archivo de bigramas")
 	}
 
 	defer ModBigFile.Close()
@@ -250,7 +245,7 @@ func Lee_Bigramas() {
 		}
 	} // end for
 
-	slog.Info(fmt.Sprintf("Cargados %d bigramas con %d cuentas", total_cats, total_tok))
+	log.Infof("Cargados %d bigramas con %d cuentas", total_cats, total_tok)
 
 	for cat2, v := range cuentas {
 
@@ -276,8 +271,7 @@ func Lee_Modelo_lexico() {
 	dic_file := path.Join(DATADIR, "General")
 	ModLexFile, err := os.Open(dic_file + ".lex")
 	if err != nil {
-		slog.Error(fmt.Sprintf("Problemas con el modelo estadístico léxico: %v", err))
-		os.Exit(1)
+		log.WithError(err).Error("Problemas con el modelo estadístico léxico")
 	}
 	defer ModLexFile.Close()
 
@@ -294,7 +288,7 @@ func Lee_Modelo_lexico() {
 			consulta := Dicc[form]
 			n_cats := len(consulta)
 			if n_cats > 1 {
-				//fmt.Println(form, cat, cue, consulta)
+				//log.Debugln(form, cat, cue, consulta)
 				if Lex[form] == nil {
 					Lex[form] = make(map[string]float64)
 				}
@@ -308,16 +302,15 @@ func Lee_Modelo_lexico() {
 		for c := range Lex[f] {
 			total += Lex[f][c]
 			Lex[f][c] = math.Log10(Lex[f][c]) - math.Log10(float64(cuentas[c]))
-			//fmt.Println(f, c, Lex[f][c])
-
+			//log.Debugln(f, c, Lex[f][c])
 		}
 		consulta := Dicc[f]
 		for k := range consulta {
 			if Lex[f][k] == 0. && k != "AUX|V" {
 				Lex[f][k] = math.Log10(0.5) - math.Log10(float64(cuentas[k]))
-				//fmt.Println("\t", k, Lex[f][k])
+				//log.Debugln("\t", k, Lex[f][k])
 			}
 		}
 	}
-	slog.Info(fmt.Sprintf("Cargadas %6.0f cuentas del diccionario léxico", total))
+	log.Infof("Cargadas %6.0f cuentas del diccionario léxico", total)
 }

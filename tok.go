@@ -67,6 +67,15 @@ func compatible_clitico(form string) bool {
 	return false
 }
 
+func quita_tildes(pal string) string {
+	sal := strings.Replace(pal, "á", "a", 1)
+	sal = strings.Replace(sal, "é", "e", 1)
+	sal = strings.Replace(sal, "í", "i", 1)
+	sal = strings.Replace(sal, "ó", "o", 1)
+	sal = strings.Replace(sal, "ú", "u", 1)
+	return sal
+}
+
 func SeparaClíticos(entrada string) string {
 
 	re_cli := regexp.MustCompile(`(.+)(le|me|se|te)(lo)?$`)
@@ -79,6 +88,12 @@ func SeparaClíticos(entrada string) string {
 		resu := re_cli.FindStringSubmatch(v)
 		if len(resu) > 0 {
 			form := resu[1]
+
+				// quita tildes del principio
+				if (len(resu) > 3) {
+					form = quita_tildes(form)
+			}
+
 			if compatible_clitico(form) {
 				clitico = true
 			}
@@ -88,6 +103,7 @@ func SeparaClíticos(entrada string) string {
 			if resu[3] != "" {
 				salida += resu[3] + " "
 			}
+			salida = quita_tildes(salida)
 		} else {
 			salida += v + " "
 		}
@@ -149,7 +165,7 @@ func ReconoceMultiwordsTrie(frase string) string {
 
 		m, _, b := Mw.LongestPrefix(frase_t)
 		last_trie = m
-		log.Debug("m: ", m, "  b: ", b)
+		// log.Debug("frase: ", frase," m: ", m, "  b: ", b, " i: ", i, " lngi: ", len(frase))
 		if b {
 
 			r := strings.Replace(m, " ", "_", -1)
@@ -163,12 +179,13 @@ func ReconoceMultiwordsTrie(frase string) string {
 			}
 
 			frase_t = strings.Replace(frase_t, m, r, 1)
+			//log.Debug(frase_t, i)
 			frase_t = frase_t[i+1:]
 		}
 		i = strings.Index(frase_t, " ")
 		frase_t = frase_t[i+1:]
 	}
-	log.Debug("frase: ", frase)
+	//log.Debug("frase: ", frase)
 	// para corrregir conflicto: a la pared -- a la par
 	if (len(frase) != len(last_trie)) {frase = strings.Replace(frase, "_", " ", -1)}
 	return frase

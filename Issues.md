@@ -3,7 +3,7 @@
 NO FUNCIONA:
 ------------
 
-	✓ Las multiwords
+	- ✓ Las multiwords
 
 
 Falta:
@@ -12,7 +12,7 @@ Falta:
 ---
   - ✓ Poner el cors bien
   - ✓ API para corrector
-  - Logger
+  - ✓ Logger
 ---
 - Paralelismo al cagar los modelos
 - Paralelismo en el cálculo de probabilidades
@@ -24,7 +24,7 @@ Falta:
 - Estudio de errores
 ---
 ---
-- Tokenización con IA
+- Tokenización con IA (mw)
 - Mas entrenamiento con IA ?
 - Más contexto con IA ?
 - Lematizador mejorado con IA ?

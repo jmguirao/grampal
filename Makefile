@@ -14,6 +14,9 @@ dev:
 update:
 	git pull origin master
 	go build .
-	rsync 
+	rsync -av --delete . /home/jmguirao/aplicaciones/grampal/service --exclude .git
+	sudo systemctl restart grampal-dic
+	sudo systemctl restart grampal-des
+	
 
 

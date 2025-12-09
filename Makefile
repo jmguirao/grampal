@@ -11,5 +11,9 @@ trace:
 dev:
 	go run . --ser --cors
 
+update:
+	git pull origin master
+	go build .
+	rsync 
 
 

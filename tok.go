@@ -150,43 +150,57 @@ func SeparaAmalgamas(frase string) string {
 	return frase
 }
 
+// * Devuelve separado con _ en multiwords
 func ReconoceMultiwordsTrie(frase string) string {
 
+	// primera letra minúscula
 	frase_t := strings.ToLower(frase[:1]) + frase[1:]
 
+	// no words , return
 	i := strings.Index(frase_t, " ")
 	if i < 0 {
 		return frase
 	}
 
-	// devuelve frase con subrallados si es mw
-	last_trie := ""
-	for i > 0 {
+	m, _, b := Mw.LongestPrefix(frase_t)
 
-		m, _, b := Mw.LongestPrefix(frase_t)
-		last_trie = m
-		// log.Debug("frase: ", frase," m: ", m, "  b: ", b, " i: ", i, " lngi: ", len(frase))
-		if b {
-
-			r := strings.Replace(m, " ", "_", -1)
-
-			if strings.Contains(frase, m) { // corregido bug
-				frase = strings.Replace(frase, m, r, 1)
-			} else { // primera mayúscula
-				mm := strings.ToUpper(m[:1]) + m[1:]
-				rr := strings.Replace(mm, " ", "_", -1)
-				frase = strings.Replace(frase, mm, rr, 1)
-			}
-
-			frase_t = strings.Replace(frase_t, m, r, 1)
-			//log.Debug(frase_t, i)
-			frase_t = frase_t[i+1:]
-		}
-		i = strings.Index(frase_t, " ")
-		frase_t = frase_t[i+1:]
+	// mw sola
+	if (b && m == frase_t) {
+		return strings.ReplaceAll(frase, " ", "_")
 	}
-	//log.Debug("frase: ", frase)
-	// para corrregir conflicto: a la pared -- a la par
-	if (len(frase) != len(last_trie)) {frase = strings.Replace(frase, "_", " ", -1)}
+
+	espacios := findSpaces(frase)
+	
+	// log.Tracef("\n\n                                frase_t:[%s]\n", frase_t)
+	// log.Trace(espacios)
+
+	espacios = append([]int{0}, espacios...)
+	for i , posi := range espacios {
+		//log.Tracef("                                     %d  %d  [%s]", i, posi, frase_t[posi:])
+		// principio de la frase
+		suplemento := 1
+		if i == 0 { suplemento = 0}
+		
+		m, _, b := Mw.LongestPrefix(frase_t[posi+suplemento:])
+		if b && strings.HasPrefix(frase_t[posi+suplemento:]+" ", m+" ") {
+			para_substituir := strings.ReplaceAll(m, " ", "_")
+			frase = strings.Replace(frase, m, para_substituir, 1)
+		}
+		// log.Tracef("                %t frase: [%s] m: [%s] [%s]", b, frase, m+" ", frase_t[posi+suplemento:]+" ")
+			
+		// me salto la última palabra
+		if i >= len(espacios)-2 {break}
+	}
+
 	return frase
+}
+
+func findSpaces(s string) []int {
+	var positions []int
+	for i, char := range s {
+		if char == ' ' {
+			positions = append(positions, i)
+		}
+	}
+	return positions
 }
